@@ -60,7 +60,7 @@ export default function Home() {
         )}
         <br />
         {token && (
-          <button onClick={receiveNotification}>Receive Notification</button>
+          <button onClick={receiveNotification}>Receive Custom Notification</button>
         )}
       </main>
     </div>
