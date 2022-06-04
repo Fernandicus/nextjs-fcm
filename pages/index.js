@@ -38,6 +38,8 @@ export default function Home() {
   }
 
   useEffect(() => {
+    //* Push Notifications not available in Safari browsers
+    if ("safari" in window) return;
     //* Escuchar posibles mensajes puede hacerse desde cualquier lugar
     //* este metodo escucha solo las notificaciones cuando la ventana está en primer plano
     if ("serviceWorker" in navigator) {
@@ -60,7 +62,9 @@ export default function Home() {
         )}
         <br />
         {token && (
-          <button onClick={receiveNotification}>Receive Custom Notification</button>
+          <button onClick={receiveNotification}>
+            Receive Custom Notification
+          </button>
         )}
       </main>
     </div>
