@@ -27,7 +27,7 @@ export default function Home() {
   }
 
   async function receiveNotification() {
-    //* send custom message from server to user
+    //* send custom push notifications from server to user
     await fetch("/api/notifications", {
       method: "POST",
       headers: {
