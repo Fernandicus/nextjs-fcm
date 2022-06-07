@@ -15,13 +15,15 @@ if (!getApps().length) {
 
 //* Use user token to send push notifications
 export default async function handler(req, res) {
-  const { token } = req.body;
-  if (token) {
+  const { token, link } = req.body;
+  if (token && !link) {
     if (typeof token !== "array") {
       sendDataToOneUser(token);
     } else {
       sendDataToMultipleUsers([token]);
     }
+  } else if (link) {
+    sendNotificationWithLink();
   }
   res.end();
 }
@@ -50,6 +52,45 @@ async function sendDataToOneUser(token) {
     .catch((error) => {
       console.log("Error sending message:");
       console.err(err);
+    });
+}
+
+//* If you want to send links to redirect the user to your app you must subribe them to a topic
+//* and make a HTTP request
+async function sendNotificationWithLink() {
+  const accessToken = await applicationDefault().getAccessToken();
+  const firebaseAccessToken = accessToken.access_token;
+
+  await fetch(
+    "https://fcm.googleapis.com//v1/projects/<PROJECT-ID>/messages:send",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${firebaseAccessToken}`,
+      },
+      body: JSON.stringify({
+        message: {
+          topic: "Topic-Name", //* First you must subscribe users to this topic
+          notification: {
+            title: "Title",
+            body: `Content`,
+          },
+          webpush: {
+            fcm_options: {
+              link: `http://localhost:3000/something/more`, //* Link to your page
+            },
+          },
+        },
+      }),
+    }
+  )
+    .then(async (resp) => {
+      console.log("SENT :", resp.status);
+      console.log(resp);
+    })
+    .catch(async (err) => {
+      console.error("ERROR :", err.status);
     });
 }
 
